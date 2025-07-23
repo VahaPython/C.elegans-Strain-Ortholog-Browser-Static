@@ -1225,6 +1225,18 @@ footer {
     padding: 8px 12px;
     font-size: 1.1em;
 }
+
+#searchBtn {
+    background-color: #004080;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#searchBtn:hover {
+    background-color: #002b5e;
+}
 .clear-btn {
     position: absolute;
     right: 8px;
@@ -1241,7 +1253,11 @@ footer {
     margin: 10px 0;
     font-style: italic;
 }
-#results table { border-collapse: collapse; width: 100%; }
+#results table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
 #results th, #results td { border: 1px solid #ccc; padding: 6px; }
 #results th { background: #005fae; color: #fff; }
 .navbar a.active { background-color: #0066cc; border-radius: 4px; }

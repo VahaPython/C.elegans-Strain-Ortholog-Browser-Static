@@ -46,9 +46,9 @@ async function initTableData() {
             };
         });
 
-        // Merge ortholog table with strain info and filter allele/variant
+        // Merge ortholog table with strain info, keep all allele/variant values
         tableData = orthologRows
-            .filter(row => row['Allele/Variant'] && row['Allele/Variant'].startsWith('WB:WBVar'))
+            .filter(row => row['Allele/Variant'])
             .map(row => {
                 const key = [row['C_elegans_Gene_Symbol'], row['WormBase_Gene_ID'], row['Allele/Variant'], row['Phenotype_ID']].join('|');
                 const strainInfo = strainMap[key] || {};
@@ -102,7 +102,18 @@ function renderUnifiedTable(page = 1) {
         // External URLs
         const humanGeneUrl = humanGene ? `https://www.ncbi.nlm.nih.gov/gene/?term=${encodeURIComponent(humanGene)}` : '#';
         const wormGeneUrl = wormGene ? `https://wormbase.org/search/gene/${encodeURIComponent(wormGene)}` : '#';
-        const alleleUrl = (allele && allele.startsWith('WB:WBVar')) ? `https://wormbase.org/species/c_elegans/variation/${allele}` : '#';
+        let alleleUrl = '#';
+        if (allele) {
+            if (allele.startsWith('WB:WBVar')) {
+                const id = allele.replace('WB:', '');
+                alleleUrl = `https://wormbase.org/species/c_elegans/variation/${id}`;
+            } else if (allele.startsWith('WB:')) {
+                const id = allele.replace('WB:', '');
+                alleleUrl = `https://wormbase.org/search/all/${encodeURIComponent(id)}`;
+            } else {
+                alleleUrl = `https://wormbase.org/search/all/${encodeURIComponent(allele)}`;
+            }
+        }
         const refUrl = ref && ref.includes('WBPaper') ? `https://wormbase.org/search/paper/${ref.replace('WB_REF:', '')}` : '#';
 
         html += `<tr>
