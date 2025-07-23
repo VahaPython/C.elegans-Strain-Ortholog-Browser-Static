@@ -1,176 +1,158 @@
 // search.js
+let strainsData = [];
+let orthologsData = [];
+let phenotypeData = [];
+let allResults = [];
+const PAGE_SIZE = 25;
 
-// In the static build all data is fetched directly from TSV files using
-// PapaParse. No backend is required.
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Section navigation
-    window.showSection = function (section) {
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(section).classList.add('active');
-        document.querySelectorAll('.navbar a').forEach(link => link.classList.remove('active'));
-        if (section === 'home') document.getElementById('nav-home').classList.add('active');
-        if (section === 'search') document.getElementById('nav-search').classList.add('active');
-        if (section === 'downloads') document.getElementById('nav-downloads').classList.add('active');
-    };
-
-    // Default section
-    showSection('home');
-
-    // Search
-    const searchInput = document.getElementById('searchInput');
-    const clearBtn = document.getElementById('clearBtn');
-    const resultsDiv = document.getElementById('results');
-    const paginationDiv = document.getElementById('pagination');
-    const queryDiv = document.getElementById('searchQuery');
-    const autocompleteDiv = document.getElementById('autocomplete');
-    const PAGE_SIZE = 20;
-    let currentPage = 1;
-    let lastQuery = "";
-    let allRows = [];
-    let searchStrings = [];
-
-    async function loadData() {
-        queryDiv.textContent = 'Loading data...';
-        try {
-            const [orthoRes, phenoRes] = await Promise.all([
-                fetch('data/ortholog_table.tsv'),
-                fetch('data/phenotype_descriptions.tsv')
-            ]);
-            const [orthoText, phenoText] = await Promise.all([
-                orthoRes.text(),
-                phenoRes.text()
-            ]);
-            const ortho = Papa.parse(orthoText, {header: true, delimiter: '\t'}).data;
-            const pheno = Papa.parse(phenoText, {header: true, delimiter: '\t'}).data;
-            const phenoMap = {};
-            pheno.forEach(p => {
-                const id = p['Phenotype ID'] || p['Phenotype_ID'];
-                if (id) phenoMap[id] = p['Description'] || p['Phenotype_Description'] || '';
-            });
-            const seen = new Set();
-            allRows = ortho.filter(row => {
-                const allele = row['Allele/Variant'] || row['Allele_Variant'] || '';
-                if (!allele.startsWith('WB:WBVar')) return false;
-                row.Phenotype_ID = row['Phenotype_ID'] || row['Phenotype ID'] || '';
-                row.Phenotype_Description = phenoMap[row.Phenotype_ID] || '';
-                const key = JSON.stringify([
-                    row.C_elegans_Gene_Symbol,
-                    row.WormBase_Gene_ID,
-                    row.Human_Ortholog_Symbol,
-                    row.Human_Ortholog_ID,
-                    row.Phenotype_ID,
-                    allele,
-                ]);
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-            }).map(r => ({
-                C_elegans_Gene_Symbol: r.C_elegans_Gene_Symbol || '',
-                WormBase_Gene_ID: r.WormBase_Gene_ID || '',
-                Human_Ortholog_Symbol: r.Human_Ortholog_Symbol || '',
-                Human_Ortholog_ID: r.Human_Ortholog_ID || '',
-                Phenotype_ID: r.Phenotype_ID || '',
-                Phenotype_Description: r.Phenotype_Description || '',
-                'Allele/Variant': r['Allele/Variant'] || ''
-            }));
-            searchStrings = allRows.map(row => Object.values(row).join(' ').toLowerCase());
-            queryDiv.textContent = '';
-            fetchAndRender('', 1);
-        } catch (err) {
-            queryDiv.textContent = 'Failed to load data';
-        }
-    }
-
-    function searchRows(query) {
-        if (!query) return allRows;
-        const lower = query.toLowerCase();
-        const results = [];
-        for (let i = 0; i < searchStrings.length; i++) {
-            if (searchStrings[i].includes(lower)) {
-                results.push(allRows[i]);
-            }
-        }
-        return results;
-    }
-
-    function fetchAndRender(query, page) {
-        const filtered = searchRows(query);
-        const total = filtered.length;
-        let results;
-        let totalPages = 1;
-        if (query) {
-            results = filtered;
-        } else {
-            totalPages = Math.ceil(total / PAGE_SIZE);
-            results = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-        }
-        queryDiv.textContent = query ? `Results for "${query}"` : '';
-        renderTable(results);
-        renderPagination(totalPages, total);
-        renderAutocomplete(results, query);
-    }
-
-    // Debounce helper
-    function debounce(func, delay) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), delay);
-        };
-    }
-
-    // Live search (on input) and show/hide clear button
-    searchInput.addEventListener('input', debounce(function () {
-        lastQuery = searchInput.value.trim();
-        currentPage = 1;
-        if (!lastQuery) {
-            clearBtn.style.display = 'none';
-            resultsDiv.innerHTML = '';
-            paginationDiv.innerHTML = '';
-            autocompleteDiv.innerHTML = '';
-            return;
-        }
-        clearBtn.style.display = 'inline-block';
-        fetchAndRender(lastQuery, currentPage);
-    }, 300));
-
-        let buttons = '';
-        if (currentPage > 1) {
-            buttons += `<button onclick="goToPage(${currentPage - 1})">&lt; Prev</button>`;
-        }
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === currentPage) {
-                buttons += `<button disabled style="font-weight:bold;background:#004080;color:white;">${i}</button>`;
-            } else if (i <= 2 || i > totalPages - 2 || Math.abs(i - currentPage) <= 1) {
-                buttons += `<button onclick="goToPage(${i})">${i}</button>`;
-            } else if (i === 3 && currentPage > 5) {
-                buttons += '...';
-            } else if (i === totalPages - 2 && currentPage < totalPages - 4) {
-                buttons += '...';
-            }
-        }
-        if (currentPage < totalPages) {
-            buttons += `<button onclick="goToPage(${currentPage + 1})">Next &gt;</button>`;
-        }
-        paginationDiv.innerHTML = buttons;
-        window.goToPage = function (page) {
-            currentPage = page;
-            fetchAndRender(lastQuery, currentPage);
-        };
-    }
-
-    // Load data and then show the full table
-    loadData();
-
+// Utility: loads CSV/TSV with PapaParse
+function loadData(path, type = "csv") {
+    return new Promise((resolve, reject) => {
+        Papa.parse(path, {
+            download: true,
+            header: true,
+            delimiter: type === "tsv" ? "\t" : ",",
+            skipEmptyLines: true,
+            complete: results => resolve(results.data),
+            error: err => reject(err)
+        });
     });
+}
 
-// Download function for buttons
-function downloadFile(filename) {
-    const link = document.createElement('a');
-    link.href = filename;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+// Show error in results
+function showError(msg) {
+    document.getElementById('results').innerHTML = `<div style="color:red;">${msg}</div>`;
+}
+
+// Load all data and initialize search
+async function initSearchData() {
+    try {
+        [strainsData, orthologsData, phenotypeData] = await Promise.all([
+            loadData('data/all_strains.csv', 'csv'),
+            loadData('data/ortholog_table.tsv', 'tsv'),
+            loadData('data/phenotype_descriptions.tsv', 'tsv')
+        ]);
+        // Optionally, you can merge or pre-index data here if desired
+    } catch (e) {
+        showError("Failed to load data files. Check that you are running via HTTP, not file://");
+        throw e;
+    }
+}
+window.initSearchData = initSearchData;
+
+// Main search function: searches all 3 datasets
+function searchAll(query) {
+    if (!query) return [];
+    query = query.trim().toLowerCase();
+
+    let strainResults = strainsData.filter(row =>
+        Object.values(row).some(val => String(val).toLowerCase().includes(query))
+    );
+    let orthologResults = orthologsData.filter(row =>
+        Object.values(row).some(val => String(val).toLowerCase().includes(query))
+    );
+    let phenotypeResults = phenotypeData.filter(row =>
+        Object.values(row).some(val => String(val).toLowerCase().includes(query))
+    );
+    return [
+        { label: 'Strains', data: strainResults },
+        { label: 'Orthologs', data: orthologResults },
+        { label: 'Phenotypes', data: phenotypeResults }
+    ];
+}
+window.searchAll = searchAll;
+
+// Autocomplete (very basic)
+function autocompleteSuggestions(query) {
+    let matches = [];
+    if (!query) return matches;
+    matches = strainsData
+        .map(row => row['Strain name'] || row['strain_name'] || "")
+        .filter(name => name && name.toLowerCase().includes(query.toLowerCase()));
+    matches = [...new Set(matches)].slice(0, 10);
+    return matches;
+}
+window.autocompleteSuggestions = autocompleteSuggestions;
+
+// Renders paginated tables for results
+function renderResults(groups, page = 1) {
+    let html = '';
+    let total = 0;
+    groups.forEach(group => {
+        if (group.data.length) {
+            html += `<h3>${group.label} (${group.data.length})</h3>`;
+            html += "<table><thead><tr>";
+            // Show only the first 8 columns for large tables
+            let keys = Object.keys(group.data[0]).slice(0, 8);
+            keys.forEach(k => { html += `<th>${k}</th>`; });
+            html += "</tr></thead><tbody>";
+            group.data.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE).forEach(row => {
+                html += "<tr>";
+                keys.forEach(k => { html += `<td>${row[k]}</td>`; });
+                html += "</tr>";
+            });
+            html += "</tbody></table>";
+            total += group.data.length;
+        }
+    });
+    if (total === 0) html = '<p>No results found.</p>';
+    document.getElementById('results').innerHTML = html;
+    // Simple pagination
+    let pages = Math.ceil(total / PAGE_SIZE);
+    let pagination = '';
+    if (pages > 1) {
+        for (let i = 1; i <= pages; i++) {
+            pagination += `<button onclick="window.renderResults(window.lastResults, ${i})">${i}</button>`;
+        }
+    }
+    document.getElementById('pagination').innerHTML = pagination;
+    window.lastResults = groups;
+}
+window.renderResults = renderResults;
+
+// Setup search bar events
+window.onload = async function() {
+    // Show home by default
+    showSection('home');
+    // Load all data
+    await initSearchData();
+    // Search button event
+    document.getElementById('searchBtn').onclick = function() {
+        let query = document.getElementById('searchInput').value;
+        let groups = searchAll(query);
+        renderResults(groups);
+        document.getElementById('searchQuery').textContent = query ? `Search: "${query}"` : "";
+    };
+    // Autocomplete
+    let searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+        let val = searchInput.value;
+        let suggestions = autocompleteSuggestions(val);
+        let autoDiv = document.getElementById('autocomplete');
+        autoDiv.innerHTML = "";
+        suggestions.forEach(s => {
+            let div = document.createElement('div');
+            div.textContent = s;
+            div.onclick = () => {
+                searchInput.value = s;
+                autoDiv.innerHTML = "";
+            };
+            autoDiv.appendChild(div);
+        });
+        document.getElementById('clearBtn').style.display = val ? "block" : "none";
+    });
+    // Clear button
+    document.getElementById('clearBtn').onclick = function() {
+        document.getElementById('searchInput').value = "";
+        document.getElementById('autocomplete').innerHTML = "";
+        document.getElementById('clearBtn').style.display = "none";
+        document.getElementById('results').innerHTML = "";
+        document.getElementById('searchQuery').textContent = "";
+    };
+    // ENTER key triggers search
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        if (e.key === "Enter") {
+            document.getElementById('searchBtn').click();
+        }
+    });
 }

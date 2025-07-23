@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-    <head>
+<head>
     <meta charset="UTF-8">
     <title>C. elegans Strain Ortholog Browser</title>
     <link rel="stylesheet" href="./style.css">
@@ -11,13 +11,13 @@
     <header>
         <h1>C. elegans Strain Ortholog Browser</h1>
         <nav class="navbar">
-            <a href="#" onclick="showSection('home')" id="nav-home">Home</a>
+            <a href="#" onclick="showSection('home')" id="nav-home" class="active">Home</a>
             <a href="#" onclick="showSection('search')" id="nav-search">Search</a>
             <a href="#" onclick="showSection('downloads')" id="nav-downloads">Downloads</a>
         </nav>
     </header>
     <main>
-        <section id="home" class="section">
+        <section id="home" class="section active">
             <h2>About</h2>
             <p>This project provides an easy way to browse genes from <em>C. elegans</em> strains and their human orthologs.</p>
             <p>Created by Vahap Kucukkomurcu.</p>
@@ -28,7 +28,7 @@
         <section id="search" class="section">
             <div class="search-bar">
                 <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" placeholder="Search genes..." autocomplete="off">
+                    <input type="text" id="searchInput" placeholder="Search genes, orthologs, or phenotypes..." autocomplete="off">
                     <button id="clearBtn" class="clear-btn" style="display:none;">&times;</button>
                     <div id="autocomplete"></div>
                 </div>
@@ -43,21 +43,21 @@
             <div class="downloads-grid">
                 <div class="download-card">
                     <h3>Strain Data (.csv)</h3>
-                    <button onclick="downloadFile('data/all_strains.csv')">
+                    <a href="data/all_strains.csv" download>
                         <i class="fas fa-file-download"></i> Download
-                    </button>
+                    </a>
                 </div>
                 <div class="download-card">
                     <h3>Orthologs (.tsv)</h3>
-                    <button onclick="downloadFile('data/ortholog_table.tsv')">
+                    <a href="data/ortholog_table.tsv" download>
                         <i class="fas fa-file-download"></i> Download
-                    </button>
+                    </a>
                 </div>
                 <div class="download-card">
                     <h3>Phenotype Descriptions (.tsv)</h3>
-                    <button onclick="downloadFile('data/phenotype_descriptions.tsv')">
+                    <a href="data/phenotype_descriptions.tsv" download>
                         <i class="fas fa-file-download"></i> Download
-                    </button>
+                    </a>
                 </div>
             </div>
         </section>
@@ -78,5 +78,6 @@
     </footer>
     <script src="./papaparse.min.js"></script>
     <script src="./search.js"></script>
+    <script src="./app.js"></script>
 </body>
 </html>
