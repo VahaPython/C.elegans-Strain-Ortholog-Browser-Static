@@ -1,4 +1,4 @@
-let orthologsData = [];
+let tableData = [];
 let phenotypeDescMap = {};
 const PAGE_SIZE = 10;
 let currentPage = 1;
@@ -23,14 +23,14 @@ function showError(msg) {
 
 async function initTableData() {
     try {
-        // Load orthologs and phenotype descriptions
-        orthologsData = await loadData('data/ortholog_table.tsv', 'tsv');
+        // Load strain table and phenotype descriptions
+        tableData = await loadData('data/all_strains.csv', 'csv');
         let phenotypeDescriptions = await loadData('data/phenotype_descriptions.tsv', 'tsv');
         phenotypeDescMap = {};
         phenotypeDescriptions.forEach(row => {
             phenotypeDescMap[row['Phenotype ID']] = row['Phenotype Description'] || row['phenotype_description'];
         });
-        filteredResults = orthologsData;
+        filteredResults = tableData;
         renderUnifiedTable();
     } catch (e) {
         showError("Failed to load data files. Run via HTTP, not file://");
@@ -72,7 +72,7 @@ function renderUnifiedTable(page = 1) {
         let geneIdUrl = geneId ? `https://wormbase.org/species/c_elegans/gene/${encodeURIComponent(geneId)}` : "#";
         let alleleUrl = (allele && allele.startsWith('WBVar')) ? `https://wormbase.org/species/c_elegans/variation/${allele}` : "#";
         let phenoIdUrl = phenoId ? `https://wormbase.org/species/c_elegans/phenotype/${phenoId}` : "#";
-        let phenoDesc = phenotypeDescMap[phenoId] || "";
+        let phenoDesc = row['Phenotype Description'] || phenotypeDescMap[phenoId] || "";
         let refUrl = ref && ref.includes('WBPaper') ? `https://wormbase.org/search/paper/${ref.replace("WB_REF:", "")}` : "#";
 
         html += `<tr>
@@ -108,9 +108,9 @@ window.onload = async function() {
     document.getElementById('searchBtn').onclick = function() {
         let query = document.getElementById('searchInput').value.trim().toLowerCase();
         if (query === "") {
-            filteredResults = orthologsData;
+            filteredResults = tableData;
         } else {
-            filteredResults = orthologsData.filter(row =>
+            filteredResults = tableData.filter(row =>
                 Object.values(row).some(val => String(val).toLowerCase().includes(query))
             );
         }
@@ -129,7 +129,7 @@ window.onload = async function() {
     // Clear button
     document.getElementById('clearBtn').onclick = function() {
         document.getElementById('searchInput').value = "";
-        filteredResults = orthologsData;
+        filteredResults = tableData;
         renderUnifiedTable(1);
         document.getElementById('searchQuery').textContent = "";
     };
