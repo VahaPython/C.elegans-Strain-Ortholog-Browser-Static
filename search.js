@@ -33,7 +33,7 @@ async function initTableData() {
         phenotypeDescMap = {};
         phenotypeDescriptions.forEach(row => {
             const id = row['Phenotype ID'] || row['phenotype_id'];
-            const desc = row['Phenotype Description'] || row['Description'] || row['phenotype_description'];
+            const desc = row['Description'] || row['Phenotype Description'] || row['phenotype_description'];
             phenotypeDescMap[id] = desc;
         });
 
@@ -42,27 +42,28 @@ async function initTableData() {
         strainRows.forEach(r => {
             const key = [r['Gene Symbol'], r['WormBase Gene ID'], r['Allele/Variant'], r['Phenotype ID']].join('|');
             strainMap[key] = {
-                reference: r['Reference'] || '',
-                phenoDesc: r['Phenotype Description'] || ''
+                reference: r['Reference'] || ''
             };
         });
 
-        // Merge ortholog table with strain info
-        tableData = orthologRows.map(row => {
-            const key = [row['C_elegans_Gene_Symbol'], row['WormBase_Gene_ID'], row['Allele/Variant'], row['Phenotype_ID']].join('|');
-            const strainInfo = strainMap[key] || {};
-            return {
-                'Human Gene Symbol': row['Human_Ortholog_Symbol'] || '',
-                'C. elegans Gene': row['C_elegans_Gene_Symbol'] || '',
-                'Strain Name': row['Allele/Variant'] || '',
-                'Allele/Variant': row['Allele/Variant'] || '',
-                'Phenotype Description': strainInfo.phenoDesc || phenotypeDescMap[row['Phenotype_ID']] || '',
-                'Reference': strainInfo.reference || ''
-            };
-        });
+        // Merge ortholog table with strain info and filter allele/variant
+        tableData = orthologRows
+            .filter(row => row['Allele/Variant'] && row['Allele/Variant'].startsWith('WB:WBVar'))
+            .map(row => {
+                const key = [row['C_elegans_Gene_Symbol'], row['WormBase_Gene_ID'], row['Allele/Variant'], row['Phenotype_ID']].join('|');
+                const strainInfo = strainMap[key] || {};
+                return {
+                    'Human Gene Symbol': row['Human_Ortholog_Symbol'] || '',
+                    'C. elegans Gene': row['C_elegans_Gene_Symbol'] || '',
+                    'Strain Name': row['Allele/Variant'] || '',
+                    'Phenotype Description': row['Phenotype_ID'] || '',
+                    'Description': phenotypeDescMap[row['Phenotype_ID']] || '',
+                    'Allele/Variant': row['Allele/Variant'] || '',
+                    'Reference': strainInfo.reference || ''
+                };
+            });
 
-        filteredResults = tableData;
-        renderUnifiedTable();
+        filteredResults = [];
     } catch (e) {
         showError("Failed to load data files. Run via HTTP, not file://");
         throw e;
@@ -80,6 +81,7 @@ function renderUnifiedTable(page = 1) {
                 <th>C. elegans Gene</th>
                 <th>Strain Name</th>
                 <th>Phenotype Description</th>
+                <th>Description</th>
                 <th>Allele/Variant</th>
                 <th>Reference</th>
             </tr>
@@ -88,27 +90,29 @@ function renderUnifiedTable(page = 1) {
     `;
     let slice = filteredResults.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
     if (slice.length === 0) {
-        html += `<tr><td colspan="6">No results found.</td></tr>`;
+       html += `<tr><td colspan="7">No results found.</td></tr>`;
     }
     slice.forEach(row => {
         const humanGene = row['Human Gene Symbol'] || '';
         const wormGene = row['C. elegans Gene'] || '';
         const strainName = row['Strain Name'] || '';
         const allele = row['Allele/Variant'] || '';
-        const phenoDesc = row['Phenotype Description'] || '';
+        const pheno = row['Phenotype Description'] || '';
+        const desc = row['Description'] || '';
         const ref = row['Reference'] || '';
 
         // External URLs
         const humanGeneUrl = humanGene ? `https://www.ncbi.nlm.nih.gov/gene/?term=${encodeURIComponent(humanGene)}` : '#';
         const wormGeneUrl = wormGene ? `https://wormbase.org/search/gene/${encodeURIComponent(wormGene)}` : '#';
-        const alleleUrl = (allele && allele.startsWith('WBVar')) ? `https://wormbase.org/species/c_elegans/variation/${allele}` : '#';
+        const alleleUrl = (allele && allele.startsWith('WB:WBVar')) ? `https://wormbase.org/species/c_elegans/variation/${allele}` : '#';
         const refUrl = ref && ref.includes('WBPaper') ? `https://wormbase.org/search/paper/${ref.replace('WB_REF:', '')}` : '#';
 
         html += `<tr>
             <td><a href="${humanGeneUrl}" target="_blank">${humanGene}</a></td>
             <td><a href="${wormGeneUrl}" target="_blank">${wormGene}</a></td>
             <td>${strainName}</td>
-            <td>${phenoDesc}</td>
+            <td>${pheno}</td>
+            <td>${desc}</td>
             <td>${allele ? `<a href="${alleleUrl}" target="_blank">${allele}</a>` : allele}</td>
             <td>${ref ? `<a href="${refUrl}" target="_blank">${ref}</a>` : ref}</td>
         </tr>`;
@@ -144,7 +148,6 @@ window.onload = async function() {
     showSection('home');
     await initTableData();
 
-    // Show all entries on initial load
     document.getElementById('searchBtn').onclick = function() {
         let query = document.getElementById('searchInput').value.trim().toLowerCase();
         if (query === "") {
@@ -169,8 +172,9 @@ window.onload = async function() {
     // Clear button
     document.getElementById('clearBtn').onclick = function() {
         document.getElementById('searchInput').value = "";
-        filteredResults = tableData;
-        renderUnifiedTable(1);
+        filteredResults = [];
+        document.getElementById('results').innerHTML = "";
+        document.getElementById('pagination').innerHTML = "";
         document.getElementById('searchQuery').textContent = "";
     };
 };
