@@ -55,7 +55,6 @@ async function initTableData() {
                 return {
                     'Human Gene Symbol': row['Human_Ortholog_Symbol'] || '',
                     'C. elegans Gene': row['C_elegans_Gene_Symbol'] || '',
-                    'Strain Name': row['Allele/Variant'] || '',
                     'Phenotype Description': row['Phenotype_ID'] || '',
                     'Description': phenotypeDescMap[row['Phenotype_ID']] || '',
                     'Allele/Variant': row['Allele/Variant'] || '',
@@ -63,7 +62,8 @@ async function initTableData() {
                 };
             });
 
-        filteredResults = [];
+        filteredResults = tableData;
+        renderUnifiedTable(1);
     } catch (e) {
         showError("Failed to load data files. Run via HTTP, not file://");
         throw e;
@@ -79,7 +79,6 @@ function renderUnifiedTable(page = 1) {
             <tr>
                 <th>Human Gene Symbol</th>
                 <th>C. elegans Gene</th>
-                <th>Strain Name</th>
                 <th>Phenotype Description</th>
                 <th>Description</th>
                 <th>Allele/Variant</th>
@@ -90,12 +89,11 @@ function renderUnifiedTable(page = 1) {
     `;
     let slice = filteredResults.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
     if (slice.length === 0) {
-       html += `<tr><td colspan="7">No results found.</td></tr>`;
+       html += `<tr><td colspan="6">No results found.</td></tr>`;
     }
     slice.forEach(row => {
         const humanGene = row['Human Gene Symbol'] || '';
         const wormGene = row['C. elegans Gene'] || '';
-        const strainName = row['Strain Name'] || '';
         const allele = row['Allele/Variant'] || '';
         const pheno = row['Phenotype Description'] || '';
         const desc = row['Description'] || '';
@@ -110,7 +108,6 @@ function renderUnifiedTable(page = 1) {
         html += `<tr>
             <td><a href="${humanGeneUrl}" target="_blank">${humanGene}</a></td>
             <td><a href="${wormGeneUrl}" target="_blank">${wormGene}</a></td>
-            <td>${strainName}</td>
             <td>${pheno}</td>
             <td>${desc}</td>
             <td>${allele ? `<a href="${alleleUrl}" target="_blank">${allele}</a>` : allele}</td>
@@ -148,33 +145,40 @@ window.onload = async function() {
     showSection('home');
     await initTableData();
 
-    document.getElementById('searchBtn').onclick = function() {
-        let query = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (query === "") {
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
+
+    function performSearch(query) {
+        const q = query.trim().toLowerCase();
+        if (q === '') {
             filteredResults = tableData;
         } else {
             filteredResults = tableData.filter(row =>
-                Object.values(row).some(val => String(val).toLowerCase().includes(query))
+                Object.values(row).some(val => String(val).toLowerCase().includes(q))
             );
         }
         renderUnifiedTable(1);
-        document.getElementById('searchQuery').textContent = query ? `Search: "${query}"` : "";
+        document.getElementById('searchQuery').textContent = q ? `Search: "${q}"` : '';
+    }
+
+    document.getElementById('searchBtn').onclick = function() {
+        performSearch(searchInput.value);
     };
 
-    // Autocomplete (optional for unified table)
-    let searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('keydown', function(e) {
-        if (e.key === "Enter") {
-            document.getElementById('searchBtn').click();
+        if (e.key === 'Enter') {
+            performSearch(searchInput.value);
         }
     });
 
-    // Clear button
-    document.getElementById('clearBtn').onclick = function() {
-        document.getElementById('searchInput').value = "";
-        filteredResults = [];
-        document.getElementById('results').innerHTML = "";
-        document.getElementById('pagination').innerHTML = "";
-        document.getElementById('searchQuery').textContent = "";
+    searchInput.addEventListener('input', function() {
+        clearBtn.style.display = this.value ? 'block' : 'none';
+        performSearch(this.value);
+    });
+
+    clearBtn.onclick = function() {
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        performSearch('');
     };
 };
