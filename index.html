@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>C. elegans Strain Ortholog Browser</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="./favicon.ico">
+</head>
+<body>
+    <header>
+        <h1>C. elegans Strain Ortholog Browser</h1>
+        <nav class="navbar">
+            <a href="#" onclick="showSection('home')" id="nav-home">Home</a>
+            <a href="#" onclick="showSection('search')" id="nav-search">Search</a>
+            <a href="#" onclick="showSection('downloads')" id="nav-downloads">Downloads</a>
+        </nav>
+    </header>
+    <main>
+        <section id="home" class="section">
+            <h2>About</h2>
+            <p>This project provides an easy way to browse genes from <em>C. elegans</em> strains and their human orthologs.</p>
+            <p>Created by Vahap Kucukkomurcu.</p>
+            <h2>Contact</h2>
+            <p>Email: <a href="https://mail.google.com/mail/?view=cm&to=vahapkucukkomurcu@gmail.com" target="_blank">vahapkucukkomurcu@gmail.com</a></p>
+            <p><a href="#" onclick="showSection('search')">Go to Search</a></p>
+        </section>
+        <section id="search" class="section">
+            <div class="search-bar">
+                <div class="search-input-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search genes..." autocomplete="off">
+                    <button id="clearBtn" class="clear-btn" style="display:none;">&times;</button>
+                    <div id="autocomplete"></div>
+                </div>
+                <button id="searchBtn">Search</button>
+            </div>
+            <div id="searchQuery" class="search-query"></div>
+            <div id="results"></div>
+            <div id="pagination"></div>
+        </section>
+        <section id="downloads" class="section">
+            <h2>Download Data</h2>
+            <div class="downloads-grid">
+                <div class="download-card">
+                    <h3>Strain Data (.csv)</h3>
+                    <button onclick="downloadFile('data/all_strains.csv')">
+                        <i class="fas fa-file-download"></i> Download
+                    </button>
+                </div>
+                <div class="download-card">
+                    <h3>Orthologs (.tsv)</h3>
+                    <button onclick="downloadFile('data/ortholog_table.tsv')">
+                        <i class="fas fa-file-download"></i> Download
+                    </button>
+                </div>
+                <div class="download-card">
+                    <h3>Phenotype Descriptions (.tsv)</h3>
+                    <button onclick="downloadFile('data/phenotype_descriptions.tsv')">
+                        <i class="fas fa-file-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <span>&copy; 2025 C. elegans Ortholog Project</span>
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/vahapkucukkomurcu" target="_blank" aria-label="LinkedIn">
+                <i class="fab fa-linkedin social-icon" style="color:#0077b5;"></i>
+            </a>
+            <a href="https://github.com/VahaPython" target="_blank" aria-label="GitHub">
+                <i class="fab fa-github social-icon" style="color:#333;"></i>
+            </a>
+            <a href="https://www.instagram.com/vkkomurcu9" target="_blank" aria-label="Instagram">
+                <i class="fab fa-instagram social-icon" style="color:#E4405F;"></i>
+            </a>
+        </div>
+    </footer>
+    <script src="./papaparse.min.js"></script>
+    <script src="./search.js"></script>
+</body>
+</html>
