@@ -1,6 +1,7 @@
 let tableData = [];
 let phenotypeDescMap = {};
 const PAGE_SIZE = 10;
+const PAGE_LINKS_TO_SHOW = 5; // number of pagination buttons to display
 let currentPage = 1;
 let filteredResults = [];
 
@@ -23,13 +24,43 @@ function showError(msg) {
 
 async function initTableData() {
     try {
-        // Load strain table and phenotype descriptions
-        tableData = await loadData('data/all_strains.csv', 'csv');
-        let phenotypeDescriptions = await loadData('data/phenotype_descriptions.tsv', 'tsv');
+        // Load data files
+        const strainRows = await loadData('data/all_strains.csv', 'csv');
+        const orthologRows = await loadData('data/ortholog_table.tsv', 'tsv');
+        const phenotypeDescriptions = await loadData('data/phenotype_descriptions.tsv', 'tsv');
+
+        // Build phenotype description map
         phenotypeDescMap = {};
         phenotypeDescriptions.forEach(row => {
-            phenotypeDescMap[row['Phenotype ID']] = row['Phenotype Description'] || row['phenotype_description'];
+            const id = row['Phenotype ID'] || row['phenotype_id'];
+            const desc = row['Phenotype Description'] || row['Description'] || row['phenotype_description'];
+            phenotypeDescMap[id] = desc;
         });
+
+        // Map for reference and phenotype descriptions from strain table
+        const strainMap = {};
+        strainRows.forEach(r => {
+            const key = [r['Gene Symbol'], r['WormBase Gene ID'], r['Allele/Variant'], r['Phenotype ID']].join('|');
+            strainMap[key] = {
+                reference: r['Reference'] || '',
+                phenoDesc: r['Phenotype Description'] || ''
+            };
+        });
+
+        // Merge ortholog table with strain info
+        tableData = orthologRows.map(row => {
+            const key = [row['C_elegans_Gene_Symbol'], row['WormBase_Gene_ID'], row['Allele/Variant'], row['Phenotype_ID']].join('|');
+            const strainInfo = strainMap[key] || {};
+            return {
+                'Human Gene Symbol': row['Human_Ortholog_Symbol'] || '',
+                'C. elegans Gene': row['C_elegans_Gene_Symbol'] || '',
+                'Strain Name': row['Allele/Variant'] || '',
+                'Allele/Variant': row['Allele/Variant'] || '',
+                'Phenotype Description': strainInfo.phenoDesc || phenotypeDescMap[row['Phenotype_ID']] || '',
+                'Reference': strainInfo.reference || ''
+            };
+        });
+
         filteredResults = tableData;
         renderUnifiedTable();
     } catch (e) {
@@ -45,11 +76,11 @@ function renderUnifiedTable(page = 1) {
     <table>
         <thead>
             <tr>
-                <th>Gene Symbol</th>
-                <th>WormBase Gene ID</th>
-                <th>Allele/Variant</th>
-                <th>Phenotype ID</th>
+                <th>Human Gene Symbol</th>
+                <th>C. elegans Gene</th>
+                <th>Strain Name</th>
                 <th>Phenotype Description</th>
+                <th>Allele/Variant</th>
                 <th>Reference</th>
             </tr>
         </thead>
@@ -60,27 +91,25 @@ function renderUnifiedTable(page = 1) {
         html += `<tr><td colspan="6">No results found.</td></tr>`;
     }
     slice.forEach(row => {
-        // Create clickable links for gene, id, allele, reference
-        let geneSymbol = row['Gene Symbol'] || row['Gene symbol'] || row['gene'] || "";
-        let geneId = row['WormBase Gene ID'] || row['wormbase_gene_id'] || row['Gene ID'] || "";
-        let allele = row['Allele/Variant'] || row['allele/variant'] || "";
-        let phenoId = row['Phenotype ID'] || row['phenotype_id'] || "";
-        let ref = row['Reference'] || row['reference'] || "";
+        const humanGene = row['Human Gene Symbol'] || '';
+        const wormGene = row['C. elegans Gene'] || '';
+        const strainName = row['Strain Name'] || '';
+        const allele = row['Allele/Variant'] || '';
+        const phenoDesc = row['Phenotype Description'] || '';
+        const ref = row['Reference'] || '';
 
-        // WormBase URLs (adjust as needed)
-        let geneSymbolUrl = geneSymbol ? `https://wormbase.org/search/gene/${encodeURIComponent(geneSymbol)}` : "#";
-        let geneIdUrl = geneId ? `https://wormbase.org/species/c_elegans/gene/${encodeURIComponent(geneId)}` : "#";
-        let alleleUrl = (allele && allele.startsWith('WBVar')) ? `https://wormbase.org/species/c_elegans/variation/${allele}` : "#";
-        let phenoIdUrl = phenoId ? `https://wormbase.org/species/c_elegans/phenotype/${phenoId}` : "#";
-        let phenoDesc = row['Phenotype Description'] || phenotypeDescMap[phenoId] || "";
-        let refUrl = ref && ref.includes('WBPaper') ? `https://wormbase.org/search/paper/${ref.replace("WB_REF:", "")}` : "#";
+        // External URLs
+        const humanGeneUrl = humanGene ? `https://www.ncbi.nlm.nih.gov/gene/?term=${encodeURIComponent(humanGene)}` : '#';
+        const wormGeneUrl = wormGene ? `https://wormbase.org/search/gene/${encodeURIComponent(wormGene)}` : '#';
+        const alleleUrl = (allele && allele.startsWith('WBVar')) ? `https://wormbase.org/species/c_elegans/variation/${allele}` : '#';
+        const refUrl = ref && ref.includes('WBPaper') ? `https://wormbase.org/search/paper/${ref.replace('WB_REF:', '')}` : '#';
 
         html += `<tr>
-            <td><a href="${geneSymbolUrl}" target="_blank">${geneSymbol}</a></td>
-            <td><a href="${geneIdUrl}" target="_blank">${geneId}</a></td>
-            <td>${allele ? `<a href="${alleleUrl}" target="_blank">${allele}</a>` : allele}</td>
-            <td><a href="${phenoIdUrl}" target="_blank">${phenoId}</a></td>
+            <td><a href="${humanGeneUrl}" target="_blank">${humanGene}</a></td>
+            <td><a href="${wormGeneUrl}" target="_blank">${wormGene}</a></td>
+            <td>${strainName}</td>
             <td>${phenoDesc}</td>
+            <td>${allele ? `<a href="${alleleUrl}" target="_blank">${allele}</a>` : allele}</td>
             <td>${ref ? `<a href="${refUrl}" target="_blank">${ref}</a>` : ref}</td>
         </tr>`;
     });
@@ -90,8 +119,19 @@ function renderUnifiedTable(page = 1) {
     let totalPages = Math.ceil(filteredResults.length / PAGE_SIZE);
     let pag = '';
     if (totalPages > 1) {
-        for (let i = 1; i <= totalPages; i++) {
+        const start = Math.floor((page - 1) / PAGE_LINKS_TO_SHOW) * PAGE_LINKS_TO_SHOW + 1;
+        const end = Math.min(start + PAGE_LINKS_TO_SHOW - 1, totalPages);
+
+        if (page > 1) {
+            pag += `<button onclick="renderUnifiedTable(${page - 1})">&lt; Prev</button>`;
+        }
+
+        for (let i = start; i <= end; i++) {
             pag += `<button onclick="renderUnifiedTable(${i})"${i === page ? ' style="background:#004080;color:#fff;"' : ''}>${i}</button>`;
+        }
+
+        if (page < totalPages) {
+            pag += `<button onclick="renderUnifiedTable(${page + 1})">Next &gt;</button>`;
         }
     }
     document.getElementById('results').innerHTML = html;
