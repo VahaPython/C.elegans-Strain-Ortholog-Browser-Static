@@ -79,7 +79,6 @@ function renderUnifiedTable(page = 1) {
             <tr>
                 <th>Human Gene Symbol</th>
                 <th>C. elegans Gene</th>
-                <th>Phenotype Description</th>
                 <th>Description</th>
                 <th>Allele/Variant</th>
                 <th>Reference</th>
@@ -89,13 +88,12 @@ function renderUnifiedTable(page = 1) {
     `;
     let slice = filteredResults.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
     if (slice.length === 0) {
-       html += `<tr><td colspan="6">No results found.</td></tr>`;
+       html += `<tr><td colspan="5">No results found.</td></tr>`;
     }
     slice.forEach(row => {
         const humanGene = row['Human Gene Symbol'] || '';
         const wormGene = row['C. elegans Gene'] || '';
         const allele = row['Allele/Variant'] || '';
-        const pheno = row['Phenotype Description'] || '';
         const desc = row['Description'] || '';
         const ref = row['Reference'] || '';
 
@@ -119,7 +117,6 @@ function renderUnifiedTable(page = 1) {
         html += `<tr>
             <td><a href="${humanGeneUrl}" target="_blank">${humanGene}</a></td>
             <td><a href="${wormGeneUrl}" target="_blank">${wormGene}</a></td>
-            <td>${pheno}</td>
             <td>${desc}</td>
             <td>${allele ? `<a href="${alleleUrl}" target="_blank">${allele}</a>` : allele}</td>
             <td>${ref ? `<a href="${refUrl}" target="_blank">${ref}</a>` : ref}</td>
