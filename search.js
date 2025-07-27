@@ -55,7 +55,6 @@ async function initTableData() {
                 return {
                     'Human Gene Symbol': row['Human_Ortholog_Symbol'] || '',
                     'C. elegans Gene': row['C_elegans_Gene_Symbol'] || '',
-                    'Phenotype Description': row['Phenotype_ID'] || '',
                     'Description': phenotypeDescMap[row['Phenotype_ID']] || '',
                     'Allele/Variant': row['Allele/Variant'] || '',
                     'Reference': strainInfo.reference || ''
