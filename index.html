@@ -2,62 +2,137 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C. elegans Strain Ortholog Browser</title>
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="./favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
         <h1>C. elegans Strain Ortholog Browser</h1>
         <nav class="navbar">
-            <a href="#" onclick="showSection('home')" id="nav-home" class="active">Home</a>
-            <a href="#" onclick="showSection('search')" id="nav-search">Search</a>
+            <a href="#" onclick="showSection('search')" id="nav-search" class="active">Search</a>
             <a href="#" onclick="showSection('downloads')" id="nav-downloads">Downloads</a>
         </nav>
     </header>
     <main>
-        <section id="home" class="section active">
-            <h2>About</h2>
-            <p>This project provides an easy way to browse genes from <em>C. elegans</em> strains and their human orthologs.</p>
-            <p>Created by Vahap Kucukkomurcu and Dogancan Ozbek.</p>
-            <h2>Contact</h2>
-            <p>Email: <a href="https://mail.google.com/mail/?view=cm&to=vahapkucukkomurcu@gmail.com" target="_blank">vahapkucukkomurcu@gmail.com</a></p>
-            <p>Email: <a href="https://mail.google.com/mail/?view=cm&to=dogancanozbek@hotmail.com" target="_blank">dogancanozbek@hotmail.com</a></p>
-            <p><a href="#" onclick="showSection('search')">Go to Search</a></p>
-        </section>
-        <section id="search" class="section">
-            <div class="search-bar">
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" placeholder="Search genes, orthologs, or phenotypes..." autocomplete="off">
-                    <button id="clearBtn" class="clear-btn" style="display:none;">&times;</button>
-                    <div id="autocomplete"></div>
+        <section id="search" class="section active">
+            <!-- Statistics Section -->
+                    <section class="statistics-section">
+            <div class="statistics-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-genes">22,448</div>
+                        <div class="stat-label">C. elegans Genes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="temp-sensitive">107</div>
+                        <div class="stat-label">Temperature Sensitive Strains</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="orthologs">688,115</div>
+                        <div class="stat-label">Ortholog Records</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="phenotypes">2,709</div>
+                        <div class="stat-label">Phenotype Descriptions</div>
+                    </div>
                 </div>
-                <button id="searchBtn">Search</button>
+                
+                <!-- Charts Section -->
+                <section class="charts-section">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <h3>Gene Distribution by Function</h3>
+                            <canvas id="pieChart" class="chart-canvas"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Database Growth Over Time</h3>
+                            <canvas id="lineChart" class="chart-canvas"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- About Section (moved from Home) -->
+            <div class="about-section">
+                <h2>About</h2>
+                <p>This project provides an easy way to browse genes from <em>C. elegans</em> strains and their human orthologs.</p>
+                <p>Created by Vahap Kucukkomurcu and Dogancan Ozbek.</p>
+                <h2>Contact</h2>
+                <p>Email: <a href="https://mail.google.com/mail/?view=cm&to=vahapkucukkomurcu@gmail.com" target="_blank" rel="noopener">vahapkucukkomurcu@gmail.com</a></p>
+                <p>Email: <a href="https://mail.google.com/mail/?view=cm&to=dogancanozbek@hotmail.com" target="_blank" rel="noopener">dogancanozbek@hotmail.com</a></p>
             </div>
-            <div id="searchQuery" class="search-query"></div>
-            <div id="results"></div>
-            <div id="pagination"></div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <h2>Search C. elegans Genes</h2>
+                <div class="search-bar">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="searchInput" placeholder="Search genes, orthologs, phenotypes, or Ensembl IDs..." autocomplete="off">
+                        <button id="clearBtn" class="clear-btn" style="display:none;">&times;</button>
+                        <div id="autocomplete"></div>
+                    </div>
+                    <button id="searchBtn">Search</button>
+                </div>
+                <div id="searchQuery" class="search-query"></div>
+                <div id="results"></div>
+                <div id="pagination"></div>
+            </div>
         </section>
+        
         <section id="downloads" class="section">
             <h2>Download Data</h2>
             <div class="downloads-grid">
                 <div class="download-card">
-                    <h3>Strain Data (.csv)</h3>
-                    <a href="data/all_strains.csv" download>
+                    <h3>Enhanced Orthologs (.tsv)</h3>
+                    <p>Includes Ensembl IDs and Alliance Genome data</p>
+                    <a href="data/enhanced_ortholog_table.tsv" download>
                         <i class="fas fa-file-download"></i> Download
                     </a>
                 </div>
                 <div class="download-card">
-                    <h3>Orthologs (.tsv)</h3>
-                    <a href="data/ortholog_table.tsv" download>
+                    <h3>Temperature Sensitive Strains (.tsv)</h3>
+                    <p>Real temperature sensitive strain data</p>
+                    <a href="data/temperature_sensitive.tsv" download>
                         <i class="fas fa-file-download"></i> Download
                     </a>
                 </div>
                 <div class="download-card">
                     <h3>Phenotype Descriptions (.tsv)</h3>
+                    <p>Detailed phenotype information</p>
                     <a href="data/phenotype_descriptions.tsv" download>
                         <i class="fas fa-file-download"></i> Download
+                    </a>
+                </div>
+                <div class="download-card">
+                    <h3>Original Orthologs (.tsv)</h3>
+                    <p>Original ortholog table data</p>
+                    <a href="data/ortholog_table.tsv" download>
+                        <i class="fas fa-file-download"></i> Download
+                    </a>
+                </div>
+            </div>
+            
+            <div class="api-links">
+                <h3>External Data Sources</h3>
+                <div class="api-grid">
+                    <a href="https://www.ncbi.nlm.nih.gov/gene" target="_blank" rel="noopener" class="api-link">
+                        <i class="fas fa-dna"></i>
+                        <span>NCBI Gene Database</span>
+                    </a>
+                    <a href="https://rest.ensembl.org" target="_blank" rel="noopener" class="api-link">
+                        <i class="fas fa-database"></i>
+                        <span>Ensembl REST API</span>
+                    </a>
+                    <a href="https://www.alliancegenome.org" target="_blank" rel="noopener" class="api-link">
+                        <i class="fas fa-link"></i>
+                        <span>Alliance Genome</span>
+                    </a>
+                    <a href="https://wormbase.org" target="_blank" rel="noopener" class="api-link">
+                        <i class="fas fa-worm"></i>
+                        <span>WormBase</span>
                     </a>
                 </div>
             </div>
@@ -66,13 +141,13 @@
     <footer>
         <span>&copy; 2025 C. elegans Ortholog Project</span>
         <div class="social-links">
-            <a href="https://www.linkedin.com/in/vahapkucukkomurcu" target="_blank" aria-label="LinkedIn">
+            <a href="https://www.linkedin.com/in/vahapkucukkomurcu" target="_blank" rel="noopener" aria-label="LinkedIn">
                 <i class="fab fa-linkedin social-icon" style="color:#0077b5;"></i>
             </a>
-            <a href="https://github.com/VahaPython" target="_blank" aria-label="GitHub">
+            <a href="https://github.com/VahaPython" target="_blank" rel="noopener" aria-label="GitHub">
                 <i class="fab fa-github social-icon" style="color:#333;"></i>
             </a>
-            <a href="https://www.instagram.com/vkkomurcu9" target="_blank" aria-label="Instagram">
+            <a href="https://www.instagram.com/vkkomurcu9" target="_blank" rel="noopener" aria-label="Instagram">
                 <i class="fab fa-instagram social-icon" style="color:#E4405F;"></i>
             </a>
         </div>
@@ -80,5 +155,6 @@
     <script src="./papaparse.min.js"></script>
     <script src="./search.js"></script>
     <script src="./app.js"></script>
+    <script src="./charts.js"></script>
 </body>
 </html>

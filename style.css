@@ -1313,3 +1313,422 @@ footer {
 .blue-link:hover {
     color: #004080;
 }
+
+/* Statistics Section - Modern Design */
+.statistics-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 30px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px 25px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+    line-height: 1;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Charts Section - Modern Design */
+.charts-section {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.chart-container {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 35px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    min-height: 400px;
+}
+
+.chart-container h3 {
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.chart-container h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 2px;
+}
+
+.chart-canvas {
+    max-height: 350px;
+    margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .statistics-section {
+        padding: 25px;
+        margin: 20px 0;
+    }
+    
+    .statistics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .stat-card {
+        padding: 25px 20px;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .chart-container {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .statistics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-number {
+        font-size: 1.8rem;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+    }
+}
+
+/* Enhanced Pagination */
+#pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.pagination-info {
+    font-size: 1.1em;
+    color: #2c3e50;
+    font-weight: 500;
+    text-align: center;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    padding: 10px 15px;
+    border: 2px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.pagination-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.pagination-btn.active {
+    background: #667eea;
+    color: white;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.pagination-ellipsis {
+    color: #667eea;
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+/* Search Results Info */
+#searchQuery {
+    background: #e3f2fd;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    border-left: 4px solid #2196f3;
+    font-weight: 500;
+    color: #1976d2;
+}
+
+#searchQuery p {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+/* Enhanced Table Styles */
+table {
+    width: 100%;
+    min-width: 1200px; /* Minimum width to ensure all columns are visible */
+    border-collapse: collapse;
+    margin: 0;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    table-layout: auto;
+}
+
+th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8em;
+    border: none;
+    white-space: normal; /* Changed from nowrap to normal */
+    word-wrap: break-word;
+    min-width: 80px; /* Minimum width for headers */
+}
+
+td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.85em;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Column width adjustments - more flexible */
+table th:nth-child(1), table td:nth-child(1) { min-width: 100px; } /* Human Gene */
+table th:nth-child(2), table td:nth-child(2) { min-width: 90px; }  /* C. elegans Gene */
+table th:nth-child(3), table td:nth-child(3) { min-width: 120px; } /* WormBase ID */
+table th:nth-child(4), table td:nth-child(4) { min-width: 120px; } /* Ensembl ID */
+table th:nth-child(5), table td:nth-child(5) { min-width: 140px; } /* Amino Acid */
+table th:nth-child(6), table td:nth-child(6) { min-width: 80px; }  /* Temp Sensitive */
+table th:nth-child(7), table td:nth-child(7) { min-width: 150px; } /* Phenotype */
+table th:nth-child(8), table td:nth-child(8) { min-width: 120px; } /* Allele/Variant */
+table th:nth-child(9), table td:nth-child(9) { min-width: 80px; }  /* Alliance Ortholog */
+table th:nth-child(10), table td:nth-child(10) { min-width: 60px; } /* Alliance Allele */
+
+/* Alliance Count Styling */
+.alliance-count {
+    display: inline-block;
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #bbdefb;
+    transition: all 0.3s ease;
+    min-width: 20px;
+    text-align: center;
+}
+
+.alliance-count:hover {
+    background: #1976d2;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+/* Temperature Sensitive Indicators */
+.temp-sensitive {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-block;
+    min-width: 30px;
+    text-align: center;
+}
+
+.temp-sensitive.yes {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.temp-sensitive.no {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+/* Table Links */
+table a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+table a:hover {
+    color: #5a67d8;
+    text-decoration: underline;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* Responsive Table */
+@media (max-width: 1200px) {
+    table {
+        font-size: 0.75em;
+    }
+    
+    th, td {
+        padding: 8px 4px;
+    }
+    
+    .alliance-count {
+        padding: 2px 6px;
+        font-size: 0.8em;
+    }
+    
+    .temp-sensitive {
+        padding: 2px 6px;
+        font-size: 0.7em;
+    }
+}
+
+@media (max-width: 768px) {
+    table {
+        font-size: 0.7em;
+    }
+    
+    th, td {
+        padding: 6px 3px;
+    }
+    
+    /* Adjust column widths for mobile */
+    table th:nth-child(1), table td:nth-child(1) { width: 10%; }
+    table th:nth-child(2), table td:nth-child(2) { width: 8%; }
+    table th:nth-child(3), table td:nth-child(3) { width: 10%; }
+    table th:nth-child(4), table td:nth-child(4) { width: 10%; }
+    table th:nth-child(5), table td:nth-child(5) { width: 12%; }
+    table th:nth-child(6), table td:nth-child(6) { width: 6%; }
+    table th:nth-child(7), table td:nth-child(7) { width: 12%; }
+    table th:nth-child(8), table td:nth-child(8) { width: 10%; }
+    table th:nth-child(9), table td:nth-child(9) { width: 6%; }
+    table th:nth-child(10), table td:nth-child(10) { width: 6%; }
+}
+
+@media (max-width: 480px) {
+    table {
+        font-size: 0.65em;
+    }
+    
+    th, td {
+        padding: 4px 2px;
+    }
+    
+    .alliance-count {
+        padding: 1px 4px;
+        font-size: 0.75em;
+    }
+    
+    .temp-sensitive {
+        padding: 1px 4px;
+        font-size: 0.65em;
+    }
+}
+
+/* Table Container with Horizontal Scroll */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
