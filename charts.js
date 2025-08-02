@@ -4,12 +4,34 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCharts();
 });
 
+// Safari and Cross-Browser Compatibility Fixes
+function isSafari() {
+    return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+}
+
+function safariChartFix() {
+    if (isSafari()) {
+        // Force chart resize for Safari
+        setTimeout(() => {
+            const charts = document.querySelectorAll('canvas');
+            charts.forEach(canvas => {
+                if (canvas.chart) {
+                    canvas.chart.resize();
+                }
+            });
+        }, 100);
+    }
+}
+
 function initializeCharts() {
     // Create Pie Chart for Gene Distribution
     createPieChart();
     
     // Create Line Chart for Database Growth
     createLineChart();
+    
+    // Apply Safari-specific fixes
+    safariChartFix();
 }
 
 function createPieChart() {

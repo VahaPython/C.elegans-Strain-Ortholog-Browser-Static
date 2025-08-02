@@ -12,6 +12,212 @@ body {
     line-height: 1.6;
 }
 
+/* Safari and Cross-Browser Compatibility Fixes */
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Safari-specific fixes */
+@supports (-webkit-appearance: none) {
+    .stat-card {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+    
+    .chart-container {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+}
+
+/* Fix for Safari flexbox issues */
+.statistics-grid {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 250px;
+    flex: 1 1 250px;
+    min-width: 250px;
+}
+
+.charts-grid {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.chart-container {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Safari gradient fixes */
+.stat-number {
+    background: -webkit-linear-gradient(135deg, #3b82f6, #8b5cf6);
+    background: -moz-linear-gradient(135deg, #3b82f6, #8b5cf6);
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.statistics-section {
+    background: -webkit-linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: -moz-linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.stat-card::before {
+    background: -webkit-linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    background: -moz-linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+}
+
+.chart-container h3::after {
+    background: -webkit-linear-gradient(90deg, #3b82f6, #8b5cf6);
+    background: -moz-linear-gradient(90deg, #3b82f6, #8b5cf6);
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+/* Safari table fixes */
+.table-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+}
+
+table {
+    -webkit-border-collapse: collapse;
+    -moz-border-collapse: collapse;
+    border-collapse: collapse;
+}
+
+/* Safari button and link fixes */
+button, a {
+    -webkit-tap-highlight-color: transparent;
+    tap-highlight-color: transparent;
+}
+
+/* Safari font rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Safari animation fixes */
+.stat-card:hover {
+    -webkit-transform: translateY(-5px);
+    -moz-transform: translateY(-5px);
+    -ms-transform: translateY(-5px);
+    transform: translateY(-5px);
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+/* Safari flexbox fallbacks */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    .statistics-grid {
+        display: -webkit-flex;
+        display: flex;
+    }
+    
+    .charts-grid {
+        display: -webkit-flex;
+        display: flex;
+    }
+}
+
+/* Safari-specific media queries */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (max-width: 768px) {
+    .statistics-grid {
+        -webkit-flex-direction: column;
+        flex-direction: column;
+    }
+    
+    .charts-grid {
+        -webkit-flex-direction: column;
+        flex-direction: column;
+    }
+}
+
+/* Fix for Safari text rendering */
+.stat-label {
+    -webkit-font-feature-settings: "kern" 1;
+    font-feature-settings: "kern" 1;
+    text-rendering: optimizeLegibility;
+}
+
+/* Safari box-shadow fixes */
+.stat-card {
+    -webkit-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    -moz-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.stat-card:hover {
+    -webkit-box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* Safari border-radius fixes */
+.statistics-section,
+.stat-card,
+.charts-section,
+.chart-container {
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+}
+
+.stat-card {
+    -webkit-border-radius: 16px;
+    -moz-border-radius: 16px;
+    border-radius: 16px;
+}
+
+.chart-container {
+    -webkit-border-radius: 16px;
+    -moz-border-radius: 16px;
+    border-radius: 16px;
+}
+
+/* Safari transform fixes */
+.chart-container h3::after {
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
 /* Navbar */
 .navbar {
     background-color: #004080;

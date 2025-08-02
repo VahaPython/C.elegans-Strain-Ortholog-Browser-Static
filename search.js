@@ -334,6 +334,9 @@ function renderUnifiedTable(page = 1) {
     html += '</tbody></table></div>';
     document.getElementById('results').innerHTML = html;
     renderPagination();
+    
+    // Apply Safari-specific fixes
+    safariTableFix();
 }
 
 function renderPagination() {
@@ -435,5 +438,42 @@ function generateAminoAcidData(geneSymbol, variant) {
         return `WT: ${wtAA} / Mutant: DEL (deletion)`;
     } else {
         return `WT: ${wtAA} / Mutant: ${mutantAA}`;
+    }
+}
+
+// Safari and Cross-Browser Compatibility Fixes
+function isSafari() {
+    return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+}
+
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Safari-specific fixes for table rendering
+function safariTableFix() {
+    if (isSafari()) {
+        // Force reflow for Safari table rendering
+        const table = document.querySelector('table');
+        if (table) {
+            table.style.display = 'none';
+            table.offsetHeight; // Force reflow
+            table.style.display = '';
+        }
+    }
+}
+
+// Safari-specific fixes for chart rendering
+function safariChartFix() {
+    if (isSafari()) {
+        // Force chart resize for Safari
+        setTimeout(() => {
+            const charts = document.querySelectorAll('canvas');
+            charts.forEach(canvas => {
+                if (canvas.chart) {
+                    canvas.chart.resize();
+                }
+            });
+        }, 100);
     }
 }
