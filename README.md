@@ -1,170 +1,174 @@
 # C. elegans Strain Ortholog Browser
 
-A comprehensive web application for browsing C. elegans genes, their human orthologs, and associated data from multiple biological databases.
+A comprehensive web application for browsing C. elegans genes, their human orthologs, and associated phenotypic data. This project provides researchers with an intuitive interface to explore gene relationships between C. elegans and human orthologs, complete with interactive visualizations and detailed phenotype descriptions.
 
-## 🚀 **PROJECT COMPLETED** ✅
+## Project Overview
 
-### 🎯 **Final Features**
+This application serves as a research tool for the C. elegans research community, offering access to comprehensive gene data including ortholog relationships, temperature sensitivity information, and detailed phenotype descriptions. The interface combines modern web technologies with biological data to create an efficient research platform.
 
-1. **✅ Interactive Charts**
-   - **Pie Chart**: Gene Distribution by Function (6 categories)
-   - **Line Chart**: Database Growth Over Time (2020-2025)
-   - **Chart.js Integration**: Professional, responsive charts
-   - **Hover Effects**: Interactive tooltips and animations
+## Key Features
 
-2. **✅ Enhanced Data Integration**
-   - **Ensembl.org API**: Real Ensembl IDs (ENSG format)
-   - **AllianceGenome API**: Orthologs, variants, and alleles
-   - **NCBI Gene Database**: Human gene information
-   - **WormBase**: Primary C. elegans data source
+### Interactive Data Visualization
+- **Gene Distribution Pie Chart**: Displays C. elegans genes categorized by functional groups (Mechanosensory, Dauer, Development, Metabolism, Neural, Other)
+- **Database Growth Timeline**: Shows the progression of data accumulation from 2020 to 2025
+- **Real-time Statistics**: Dynamic calculation and display of gene counts, ortholog numbers, and phenotype diversity
 
-3. **✅ Complete Table Structure**
-   - **Amino Acid (WT/Mutant)**: Real amino acid codes
-   - **Ensembl ID**: ENSG format identifiers
-   - **Temperature Sensitive**: Visual indicators
-   - **Alliance Ortholog Count**: Numerical data
-   - **Alliance Allele Count**: Numerical data
-   - **Phenotype Description**: Detailed descriptions
+### Advanced Search Functionality
+- **Multi-field Search**: Search across Human Gene Symbols, C. elegans Gene names, and Phenotype Descriptions
+- **Real-time Results**: Instant filtering and display of matching genes
+- **Pagination System**: Efficient navigation through large datasets with 10 results per page
 
-4. **✅ Real Data Processing**
-   - **22,448 C. elegans Genes** processed
-   - **688,115 Ortholog Records** enhanced
-   - **1,000 Temperature Sensitive Strains** created
-   - **2,709 Phenotype Descriptions** integrated
+### Phenotype Description Tooltips
+- **Expandable Text Display**: Click arrow buttons to view full phenotype descriptions
+- **Modal-style Tooltips**: Clean, readable text bubbles that appear above table content
+- **Responsive Design**: Tooltips adapt to screen size and position intelligently
 
-5. **✅ Modern UI/UX**
-   - **Statistics Dashboard**: Professional cards layout
-   - **Responsive Design**: Mobile-friendly interface
-   - **Search Functionality**: Real-time gene search
-   - **Download Section**: Enhanced data files
-   - **External Links**: API database connections
+### Comprehensive Data Integration
+- **Enhanced Ortholog Data**: 22,448 C. elegans genes with human ortholog information
+- **Temperature Sensitivity**: 1,000+ temperature-sensitive strain records
+- **Phenotype Descriptions**: 2,709 detailed phenotype descriptions
+- **External Database Links**: Direct connections to NCBI, Ensembl, WormBase, and Alliance Genome
 
-## 📊 **Interactive Statistics Dashboard**
+## Technical Implementation
 
-### **Key Metrics**
-| Metric | Count | Source |
-|--------|-------|--------|
-| C. elegans Genes | 22,448 | Real data |
-| Temperature Sensitive Strains | 100 | Calculated |
-| Ortholog Records | 688,115 | Enhanced |
-| Phenotype Descriptions | 2,709 | Real data |
+### Frontend Architecture
+- **HTML5**: Semantic document structure
+- **CSS3**: Modern styling with Flexbox and Grid layouts
+- **JavaScript**: Interactive functionality and data manipulation
+- **Chart.js**: Professional data visualization library
+- **PapaParse**: TSV/CSV data parsing
 
-### **Visual Charts**
-- **Pie Chart**: Gene distribution across 6 functional categories
-- **Line Chart**: Database growth from 2020-2025 with real data points
-- **Interactive Features**: Hover tooltips, animations, responsive design
-
-## 🛠️ **Technical Implementation**
-
-### **Frontend Technologies**
-- **HTML5**: Semantic structure
-- **CSS3**: Modern styling with gradients and animations
-- **JavaScript**: Interactive functionality
-- **Chart.js**: Professional data visualization
-- **Font Awesome**: Icons and visual elements
-
-### **Data Processing**
-- **Python**: Data enhancement and API integration
+### Data Processing
+- **Python Scripts**: Automated data enhancement and API integration
 - **Pandas**: Data manipulation and analysis
-- **Real APIs**: Ensembl, AllianceGenome, NCBI, WormBase
+- **Real-time APIs**: Integration with major biological databases
 
-### **Files Structure**
+### File Structure
 ```
 C.elegans-Strain-Ortholog-Browser-Static/
-├── index.html              # Main application
-├── style.css               # Modern styling
-├── search.js               # Search functionality
-├── app.js                  # Navigation logic
-├── charts.js               # Interactive charts
-├── create_fast_data.py     # Data processing script
+├── index.html                    # Main application interface
+├── style.css                     # Comprehensive styling
+├── search.js                     # Search and data handling
+├── charts.js                     # Chart initialization and interactions
+├── app.js                        # Navigation and UI logic
+├── create_fast_data.py           # Data processing script
 ├── data/
-│   ├── enhanced_ortholog_table.tsv    # Main data
-│   ├── temperature_sensitive.tsv      # Temperature data
-│   ├── phenotype_descriptions.tsv     # Phenotype data
-│   └── ortholog_table.tsv             # Original data
-└── README.md               # Documentation
+│   ├── enhanced_ortholog_table.tsv    # Primary gene data
+│   ├── temperature_sensitive.tsv      # Temperature sensitivity data
+│   ├── phenotype_descriptions.tsv     # Phenotype information
+│   └── ortholog_table.tsv             # Original ortholog data
+└── README.md                     # Project documentation
 ```
 
-## 🎨 **Design Features**
+## Data Sources and Integration
 
-### **Statistics Section**
-- **Gradient Background**: Purple-blue theme
-- **Card Layout**: 4 prominent statistics cards
-- **Hover Effects**: Smooth animations
-- **Responsive Grid**: Adapts to screen size
+### Primary Data Sources
+- **WormBase**: C. elegans gene information and annotations
+- **Ensembl**: Human gene identifiers and ortholog relationships
+- **Alliance Genome**: Comprehensive ortholog and variant data
+- **NCBI Gene Database**: Human gene symbols and descriptions
 
-### **Charts**
-- **Pie Chart**: 6-color scheme with legends
-- **Line Chart**: Smooth curves with data points
-- **Animations**: 2-second loading animations
-- **Tooltips**: Detailed information on hover
+### Data Processing Pipeline
+1. **Raw Data Collection**: Extraction from WormBase and related databases
+2. **API Enhancement**: Integration with Ensembl and Alliance Genome APIs
+3. **Data Validation**: Cross-referencing with NCBI Gene Database
+4. **Format Standardization**: Conversion to TSV format for web compatibility
 
-### **Search Interface**
-- **Real-time Search**: Instant results
-- **Multiple Fields**: Gene, ortholog, phenotype search
-- **Pagination**: 10 results per page
-- **External Links**: Direct database connections
+## User Interface Design
 
-## 🔗 **External Database Integration**
+### Statistics Dashboard
+- **Real-time Metrics**: Dynamic calculation of gene counts and statistics
+- **Professional Layout**: Clean card-based design with gradient backgrounds
+- **Responsive Grid**: Adapts to different screen sizes and orientations
 
-- **[NCBI Gene Database](https://www.ncbi.nlm.nih.gov/gene)** - Human gene information
-- **[Ensembl REST API](https://rest.ensembl.org)** - Gene IDs and variants
-- **[Alliance Genome](https://www.alliancegenome.org)** - Orthologs and alleles
-- **[WormBase](https://wormbase.org)** - C. elegans primary data
+### Interactive Table
+- **Comprehensive Columns**: Human Gene Symbol, C. elegans Gene, WormBase ID, Ensembl ID, Amino Acid data, Temperature Sensitivity, Phenotype Description, Allele/Variant, and Alliance counts
+- **External Links**: Direct connections to relevant biological databases
+- **Visual Indicators**: Color-coded temperature sensitivity badges
+- **Expandable Content**: Click-to-expand phenotype descriptions
 
-## 📱 **Responsive Design**
+### Search Interface
+- **Intelligent Filtering**: Search across multiple relevant fields
+- **Instant Results**: Real-time filtering without page reload
+- **Pagination Controls**: Efficient navigation through large result sets
 
-- **Desktop**: Full-featured interface
-- **Tablet**: Optimized layout
-- **Mobile**: Touch-friendly design
-- **Cross-browser**: Chrome, Safari, Firefox, Edge
+## Installation and Usage
 
-## 🚀 **Quick Start**
-
-1. **Clone Repository**
+### Local Development Setup
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/VahaPython/C.elegans-Strain-Ortholog-Browser-Static.git
    cd C.elegans-Strain-Ortholog-Browser-Static
    ```
 
-2. **Start Local Server**
+2. **Start the local server**:
    ```bash
    python3 -m http.server 8000
    ```
 
-3. **Open Browser**
-   ```
-   http://localhost:8000
-   ```
+3. **Access the application**:
+   Open your web browser and navigate to `http://localhost:8000`
 
-## 📊 **Data Sources**
+### System Requirements
+- **Web Browser**: Modern browser with JavaScript enabled (Chrome, Firefox, Safari, Edge)
+- **Python**: Python 3.6 or higher (for local server)
+- **Internet Connection**: Required for external database links
 
-- **Primary**: WormBase C. elegans data
-- **Enhancement**: Ensembl, AllianceGenome APIs
-- **Validation**: NCBI Gene Database
-- **Processing**: Custom Python scripts
+## Research Applications
 
-## 👥 **Authors**
+### Gene Discovery
+- Identify C. elegans genes with human orthologs
+- Explore functional relationships across species
+- Discover potential disease model candidates
 
-- **Vahap Kucukkomurcu** - vahapkucukkomurcu@gmail.com
-- **Dogancan Ozbek** - dogancanozbek@hotmail.com
+### Phenotype Analysis
+- Access detailed phenotype descriptions
+- Study temperature-sensitive mutations
+- Analyze gene function through phenotypic data
 
-## 📄 **License**
+### Comparative Genomics
+- Compare gene structures between C. elegans and humans
+- Investigate evolutionary relationships
+- Study conserved biological pathways
+
+## Performance and Scalability
+
+### Data Handling
+- **Efficient Parsing**: Optimized TSV data loading
+- **Memory Management**: Streamlined data processing
+- **Caching**: Browser-level caching for improved performance
+
+### Responsive Design
+- **Mobile Optimization**: Touch-friendly interface for mobile devices
+- **Cross-browser Compatibility**: Consistent functionality across browsers
+- **Accessibility**: Keyboard navigation and screen reader support
+
+## Future Development
+
+### Planned Enhancements
+- **Advanced Filtering**: Additional search criteria and filters
+- **Data Export**: Enhanced download capabilities
+- **API Integration**: Real-time data updates from external sources
+- **User Accounts**: Personalized research collections
+
+### Research Collaboration
+- **Data Sharing**: Export and import functionality for research groups
+- **Annotation Tools**: User-contributed phenotype annotations
+- **Integration APIs**: Programmatic access for computational biology
+
+## Contact Information
+
+For questions, suggestions, or collaboration opportunities:
+
+- **Vahap Kucukkomurcu**: vahapkucukkomurcu@gmail.com
+- **Dogancan Ozbek**: dogancanozbek@hotmail.com
+
+## License
 
 © 2025 C. elegans Ortholog Project
 
+This project is developed for the research community and is available for academic and research use.
+
 ---
 
-## 🎉 **Project Status: COMPLETED** ✅
-
-All requirements have been successfully implemented:
-- ✅ Interactive charts with real data
-- ✅ Complete data integration
-- ✅ Modern, responsive design
-- ✅ Professional statistics dashboard
-- ✅ Enhanced search functionality
-- ✅ External database connections
-- ✅ Download capabilities
-- ✅ Mobile-friendly interface
-
-**Ready for production deployment!** 🚀
+*This application represents a comprehensive tool for C. elegans research, combining modern web technologies with extensive biological data to facilitate gene discovery and comparative genomics research.*
