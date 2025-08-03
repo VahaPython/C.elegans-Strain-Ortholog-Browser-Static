@@ -1839,6 +1839,7 @@ td {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
 }
 
 /* Column width adjustments - compact */
@@ -2314,4 +2315,166 @@ tr:last-child td {
 #searchQuery p {
     margin: 0;
     font-size: inherit;
+}
+
+/* Phenotype Tooltip Styles */
+.phenotype-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.phenotype-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.phenotype-expand-btn {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.phenotype-expand-btn:hover {
+    background: #e3f2fd;
+    transform: scale(1.1);
+}
+
+.phenotype-expand-btn i {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+}
+
+.phenotype-tooltip {
+    position: fixed;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.phenotype-tooltip.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.tooltip-content {
+    background: white;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    max-width: 300px;
+    min-width: 250px;
+    position: relative;
+    z-index: 10000;
+}
+
+.tooltip-header {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.8em;
+}
+
+.tooltip-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.tooltip-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tooltip-body {
+    padding: 12px;
+    color: #374151;
+    line-height: 1.4;
+    font-size: 0.8em;
+    max-height: 150px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* Arrow pointing to the cell */
+.tooltip-content::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #3b82f6;
+}
+
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: -6px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tooltip-content {
+        max-width: 250px;
+        min-width: 200px;
+    }
+    
+    .tooltip-body {
+        max-height: 120px;
+        font-size: 0.75em;
+    }
+    
+    .phenotype-expand-btn {
+        padding: 4px 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tooltip-content {
+        max-width: 280px;
+        min-width: 250px;
+    }
+    
+    .tooltip-header {
+        padding: 10px 12px;
+        font-size: 0.8em;
+    }
+    
+    .tooltip-body {
+        padding: 12px;
+        max-height: 150px;
+        font-size: 0.75em;
+    }
 }

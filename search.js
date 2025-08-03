@@ -11,13 +11,20 @@ window.filteredResults = filteredResults;
 
 function loadData(path, type = "csv") {
     return new Promise((resolve, reject) => {
+        console.log(`Attempting to load: ${path}`);
         Papa.parse(path, {
             download: true,
             header: true,
             delimiter: type === "tsv" ? "\t" : ",",
             skipEmptyLines: true,
-            complete: results => resolve(results.data),
-            error: err => reject(err)
+            complete: results => {
+                console.log(`Successfully loaded ${path}:`, results.data.length, 'rows');
+                resolve(results.data);
+            },
+            error: err => {
+                console.error(`Error loading ${path}:`, err);
+                reject(err);
+            }
         });
     });
 }
@@ -29,11 +36,13 @@ function showError(msg) {
 async function initTableData() {
     try {
         console.log("Loading data files...");
+        console.log("Current URL:", window.location.href);
+        console.log("PapaParse available:", typeof Papa !== 'undefined');
         
         // Load enhanced data files
-        const enhancedOrthologRows = await loadData('data/enhanced_ortholog_table.tsv', 'tsv');
-        const phenotypeDescriptions = await loadData('data/phenotype_descriptions.tsv', 'tsv');
-        const temperatureSensitive = await loadData('data/temperature_sensitive.tsv', 'tsv');
+        const enhancedOrthologRows = await loadData('./data/enhanced_ortholog_table.tsv', 'tsv');
+        const phenotypeDescriptions = await loadData('./data/phenotype_descriptions.tsv', 'tsv');
+        const temperatureSensitive = await loadData('./data/temperature_sensitive.tsv', 'tsv');
 
         console.log(`Loaded ${enhancedOrthologRows.length} ortholog rows`);
         console.log(`Loaded ${phenotypeDescriptions.length} phenotype descriptions`);
@@ -271,7 +280,7 @@ function renderUnifiedTable(page = 1) {
     
     let slice = filteredResults.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
     
-    slice.forEach(row => {
+    slice.forEach((row, index) => {
         const humanGene = row['Human Gene Symbol'] || '';
         const wormGene = row['C. elegans Gene'] || '';
         const wormbaseId = row['WormBase ID'] || '';
@@ -282,6 +291,9 @@ function renderUnifiedTable(page = 1) {
         const allele = row['Allele/Variant'] || '';
         const orthologCount = row['Alliance Ortholog Count'] || 0;
         const alleleCount = row['Alliance Allele Count'] || 0;
+        
+        // Generate unique ID for phenotype tooltip
+        const phenotypeId = `phenotype-${Date.now()}-${index}`;
 
         // External URLs - Fixed to use working links
         const humanGeneUrl = humanGene ? `https://www.ncbi.nlm.nih.gov/gene/?term=${encodeURIComponent(humanGene.split(',')[0])}` : '#';
@@ -345,7 +357,28 @@ function renderUnifiedTable(page = 1) {
                 <td>${ensemblDisplay ? `<a href="${ensemblUrl}" target="_blank" rel="noopener">${ensemblDisplay}</a>` : ''}</td>
                 <td>${aminoAcid}</td>
                 <td><span class="temp-sensitive ${tempSensitive.toLowerCase()}">${tempSensitive}</span></td>
-                <td>${phenotype}</td>
+                <td>
+                    ${phenotype ? 
+                        `<div class="phenotype-cell">
+                            <span class="phenotype-text">${phenotype}</span>
+                            <button class="phenotype-expand-btn" onclick="togglePhenotypeTooltip('${phenotypeId}')" title="View full description">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div id="${phenotypeId}" class="phenotype-tooltip">
+                            <div class="tooltip-content">
+                                <div class="tooltip-header">
+                                    <span>Phenotype Description</span>
+                                    <button class="tooltip-close" onclick="togglePhenotypeTooltip('${phenotypeId}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="tooltip-body">${phenotype}</div>
+                            </div>
+                        </div>` 
+                        : 'No description'
+                    }
+                </td>
                 <td><a href="${alleleUrl}" target="_blank" rel="noopener">${allele}</a></td>
                 <td><a href="${allianceUrl}" target="_blank" rel="noopener" class="alliance-count">${orthologCount}</a></td>
                 <td>${alleleCount}</td>
@@ -562,9 +595,60 @@ function calculateRealStatistics() {
     };
 }
 
+// Function to toggle phenotype tooltip
+function togglePhenotypeTooltip(tooltipId) {
+    const tooltip = document.getElementById(tooltipId);
+    const button = event.target.closest('.phenotype-expand-btn');
+    
+    if (tooltip.classList.contains('active')) {
+        // Close tooltip
+        tooltip.classList.remove('active');
+    } else {
+        // Close any other open tooltips first
+        document.querySelectorAll('.phenotype-tooltip.active').forEach(t => {
+            if (t.id !== tooltipId) {
+                t.classList.remove('active');
+            }
+        });
+        
+        // Position tooltip next to the button
+        if (button) {
+            const buttonRect = button.getBoundingClientRect();
+            const tooltipContent = tooltip.querySelector('.tooltip-content');
+            
+            // Calculate position
+            let left = buttonRect.right + 10;
+            let top = buttonRect.top - 5;
+            
+            // Check if tooltip would go off screen
+            const tooltipWidth = 280; // max-width of tooltip
+            const tooltipHeight = 200; // estimated height
+            
+            if (left + tooltipWidth > window.innerWidth) {
+                left = buttonRect.left - tooltipWidth - 10;
+            }
+            
+            if (top + tooltipHeight > window.innerHeight) {
+                top = window.innerHeight - tooltipHeight - 10;
+            }
+            
+            if (top < 10) {
+                top = 10;
+            }
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        }
+        
+        // Open tooltip
+        tooltip.classList.add('active');
+    }
+}
+
 // Make functions globally accessible
 window.updateStatisticsWithRealData = updateStatisticsWithRealData;
 window.calculateRealStatistics = calculateRealStatistics;
+window.togglePhenotypeTooltip = togglePhenotypeTooltip;
 
 // Safari and Cross-Browser Compatibility Fixes
 function isSafari() {
