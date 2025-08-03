@@ -5,6 +5,10 @@ const PAGE_LINKS_TO_SHOW = 5; // number of pagination buttons to display
 let currentPage = 1;
 let filteredResults = [];
 
+// Make tableData globally accessible for pie chart functionality
+window.tableData = tableData;
+window.filteredResults = filteredResults;
+
 function loadData(path, type = "csv") {
     return new Promise((resolve, reject) => {
         Papa.parse(path, {
@@ -131,6 +135,21 @@ async function initTableData() {
         filteredResults = tableData;
         renderUnifiedTable(1);
         
+        // Update global references for pie chart functionality
+        window.tableData = tableData;
+        window.filteredResults = filteredResults;
+        
+        // Update pie chart with real data
+        if (typeof updatePieChartWithRealData === 'function') {
+            // Small delay to ensure chart is ready
+            setTimeout(() => {
+                updatePieChartWithRealData();
+            }, 500);
+        }
+        
+        // Update statistics with real data
+        updateStatisticsWithRealData();
+        
         // Initialize search functionality
         initializeSearch();
         
@@ -163,6 +182,7 @@ function initializeSearch() {
             } else {
                 clearBtn.style.display = 'none';
                 filteredResults = tableData;
+                window.filteredResults = filteredResults;
                 renderUnifiedTable(1);
             }
         });
@@ -173,6 +193,7 @@ function initializeSearch() {
             searchInput.value = '';
             clearBtn.style.display = 'none';
             filteredResults = tableData;
+            window.filteredResults = filteredResults;
             renderUnifiedTable(1);
         });
     }
@@ -193,12 +214,12 @@ function performSearch() {
         return (
             (row['Human Gene Symbol'] && row['Human Gene Symbol'].toLowerCase().includes(query)) ||
             (row['C. elegans Gene'] && row['C. elegans Gene'].toLowerCase().includes(query)) ||
-            (row['WormBase ID'] && row['WormBase ID'].toLowerCase().includes(query)) ||
-            (row['Ensembl ID'] && row['Ensembl ID'].toLowerCase().includes(query)) ||
-            (row['Phenotype Description'] && row['Phenotype Description'].toLowerCase().includes(query)) ||
-            (row['Allele/Variant'] && row['Allele/Variant'].toLowerCase().includes(query))
+            (row['Phenotype Description'] && row['Phenotype Description'].toLowerCase().includes(query))
         );
     });
+    
+    // Update global reference
+    window.filteredResults = filteredResults;
 
     console.log(`Found ${filteredResults.length} results`);
     
@@ -217,6 +238,7 @@ function performSearch() {
 
 window.initTableData = initTableData;
 window.performSearch = performSearch;
+window.renderUnifiedTable = renderUnifiedTable;
 
 function renderUnifiedTable(page = 1) {
     currentPage = page;
@@ -440,6 +462,109 @@ function generateAminoAcidData(geneSymbol, variant) {
         return `WT: ${wtAA} / Mutant: ${mutantAA}`;
     }
 }
+
+// Function to update statistics with real data
+function updateStatisticsWithRealData() {
+    if (!tableData || tableData.length === 0) {
+        console.log('No data available for statistics');
+        return;
+    }
+    
+    // Calculate real statistics
+    const stats = calculateRealStatistics();
+    
+    // Update the statistics display
+    const totalGenesElement = document.getElementById('total-genes');
+    const tempSensitiveElement = document.getElementById('temp-sensitive');
+    const orthologsElement = document.getElementById('orthologs');
+    const phenotypesElement = document.getElementById('phenotypes');
+    const humanOrthologsElement = document.getElementById('human-orthologs');
+    
+    if (totalGenesElement) {
+        totalGenesElement.textContent = stats.totalGenes.toLocaleString();
+    }
+    
+    if (tempSensitiveElement) {
+        tempSensitiveElement.textContent = stats.tempSensitive.toLocaleString();
+    }
+    
+    if (orthologsElement) {
+        orthologsElement.textContent = stats.totalOrthologs.toLocaleString();
+    }
+    
+    if (phenotypesElement) {
+        phenotypesElement.textContent = stats.uniquePhenotypes.toLocaleString();
+    }
+    
+    if (humanOrthologsElement) {
+        humanOrthologsElement.textContent = stats.genesWithHumanOrthologs.toLocaleString();
+    }
+    
+    console.log('Updated statistics with real data:', stats);
+    console.log('Data verification - Total records loaded:', tableData.length);
+    console.log('Sample data verification:', tableData.slice(0, 3));
+}
+
+// Function to calculate real statistics from the data
+function calculateRealStatistics() {
+    if (!tableData || tableData.length === 0) {
+        return {
+            totalGenes: 0,
+            tempSensitive: 0,
+            totalOrthologs: 0,
+            uniquePhenotypes: 0,
+            genesWithHumanOrthologs: 0,
+            totalAlleles: 0
+        };
+    }
+    
+    // Count total unique genes
+    const totalGenes = tableData.length;
+    
+    // Count temperature sensitive genes
+    const tempSensitive = tableData.filter(gene => 
+        gene['Temperature Sensitive'] && 
+        gene['Temperature Sensitive'].toLowerCase() === 'yes'
+    ).length;
+    
+    // Calculate total orthologs (sum of all ortholog counts)
+    const totalOrthologs = tableData.reduce((sum, gene) => {
+        const count = parseInt(gene['Alliance Ortholog Count'] || 0);
+        return sum + count;
+    }, 0);
+    
+    // Count unique phenotypes (non-empty descriptions)
+    const uniquePhenotypes = new Set(
+        tableData
+            .map(gene => gene['Phenotype Description'])
+            .filter(desc => desc && desc.trim() !== '')
+    ).size;
+    
+    // Count genes with human orthologs
+    const genesWithHumanOrthologs = tableData.filter(gene => 
+        gene['Human Gene Symbol'] && 
+        gene['Human Gene Symbol'].trim() !== ''
+    ).length;
+    
+    // Calculate total alleles
+    const totalAlleles = tableData.reduce((sum, gene) => {
+        const count = parseInt(gene['Alliance Allele Count'] || 0);
+        return sum + count;
+    }, 0);
+    
+    return {
+        totalGenes,
+        tempSensitive,
+        totalOrthologs,
+        uniquePhenotypes,
+        genesWithHumanOrthologs,
+        totalAlleles
+    };
+}
+
+// Make functions globally accessible
+window.updateStatisticsWithRealData = updateStatisticsWithRealData;
+window.calculateRealStatistics = calculateRealStatistics;
 
 // Safari and Cross-Browser Compatibility Fixes
 function isSafari() {

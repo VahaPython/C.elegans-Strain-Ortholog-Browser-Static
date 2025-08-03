@@ -26,27 +26,31 @@
                     <section class="statistics-section">
             <div class="statistics-grid">
                     <div class="stat-card">
-                        <div class="stat-number" id="total-genes">22,448</div>
-                        <div class="stat-label">C. elegans Genes</div>
+                        <div class="stat-number" id="total-genes">Loading...</div>
+                        <div class="stat-label">Unique C. elegans Genes</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="temp-sensitive">107</div>
-                        <div class="stat-label">Temperature Sensitive Strains</div>
+                        <div class="stat-number" id="temp-sensitive">Loading...</div>
+                        <div class="stat-label">Temperature Sensitive Genes</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="orthologs">688,115</div>
-                        <div class="stat-label">Ortholog Records</div>
+                        <div class="stat-number" id="orthologs">Loading...</div>
+                        <div class="stat-label">Total Ortholog Count</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="phenotypes">2,709</div>
-                        <div class="stat-label">Phenotype Descriptions</div>
+                        <div class="stat-number" id="phenotypes">Loading...</div>
+                        <div class="stat-label">Unique Phenotypes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="human-orthologs">Loading...</div>
+                        <div class="stat-label">Genes with Human Orthologs</div>
                     </div>
                 </div>
                 
                 <!-- Charts Section -->
                 <section class="charts-section">
                     <div class="charts-grid">
-                        <div class="chart-container">
+                        <div class="chart-container pie-chart-container">
                             <h3>Gene Distribution by Function</h3>
                             <canvas id="pieChart" class="chart-canvas"></canvas>
                         </div>
@@ -73,7 +77,7 @@
                 <h2>Search C. elegans Genes</h2>
                 <div class="search-bar">
                     <div class="search-input-wrapper">
-                        <input type="text" id="searchInput" placeholder="Search genes, orthologs, phenotypes, or Ensembl IDs..." autocomplete="off">
+                        <input type="text" id="searchInput" placeholder="Search Human Gene Symbol, C. elegans Gene, or Phenotype Description..." autocomplete="off">
                         <button id="clearBtn" class="clear-btn" style="display:none;">&times;</button>
                         <div id="autocomplete"></div>
                     </div>
